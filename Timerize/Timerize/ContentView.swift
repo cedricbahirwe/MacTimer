@@ -24,38 +24,9 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if activity != .start {
-            HStack {
-                
-                VStack(spacing: 6) {
-                    CounterView(left: 1, right: 0)
-                    Text("Minutes")
-                        .font(.headline)
-                }
-                
-                VStack {
-                    Circle()
-                        .frame(width: 16, height: 16)
-                    Circle()
-                        .frame(width: 16, height: 16)
-                }
-                .frame(width: 40, height: 70)
-                VStack(spacing: 6) {
-                    CounterView(left: 0, right: 0)
-                    Text("Seconds")
-                        .font(.headline)
-                }
-
-            }
-            .matchedGeometryEffect(id: "Counter", in: animation)
-            }
-            VStack {
-                if activity == .start {
                 HStack {
-                    VStack(spacing: 6) {
-                        CounterView(left: 1, right: 0)
-                        Text("Minutes")
-                            .font(.headline)
-                    }
+                    
+                    CounterView(title: "Minutes", left: 1, right: 0)
                     
                     VStack {
                         Circle()
@@ -64,28 +35,55 @@ struct ContentView: View {
                             .frame(width: 16, height: 16)
                     }
                     .frame(width: 40, height: 70)
-                    VStack(spacing: 6) {
-                        CounterView(left: 0, right: 0)
-                        Text("Seconds")
-                            .font(.headline)
-                    }
+                    .foregroundColor(.black)
+                    
+                    CounterView(title: "Seconds", left: 0, right: 0)
+
+                    
                 }
-                .padding()
+                .foregroundColor(.black)
                 .matchedGeometryEffect(id: "Counter", in: animation)
+            }
+            
+            VStack {
+                if activity == .start {
+                    HStack {
+                        
+                        LargeText("9")
+                            .foregroundColor(.white)
+                        VStack {
+                            Circle()
+                                .frame(width: 16, height: 16)
+                            Circle()
+                                .frame(width: 16, height: 16)
+                        }
+                        .frame(width: 40, height: 70)
+                        .foregroundColor(.white)
+                        
+                        HStack(spacing: 0) {
+                            LargeText("5")
+                            LargeText("9")
+                        }
+                        .foregroundColor(.white)
+                        
+                    }
+                    .padding()
+                    .matchedGeometryEffect(id: "Counter", in: animation)
                 }
                 Spacer()
                 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding( 50)
             
         }
-        .frame(minWidth: 600, maxWidth: .infinity, minHeight: 500, maxHeight: 1000)
+        .frame(minWidth: 600, maxWidth: .infinity, minHeight: 500, maxHeight: 800)
         .background(activity != .start ? Color.pinkColor : Color.purpleColor)
         .overlay(
             HStack {
                 if activity == .start {
                     Button(action: {
-                        withAnimation {
+                        withAnimation(.spring()) {
                             activity = .unknown
                         }
                     }, label: {
@@ -93,12 +91,12 @@ struct ContentView: View {
                             .frame(width: 60, height: 30)
                             .background(Color.white)
                             .cornerRadius(5)
-
+                        
                     })
                     .buttonStyle(PlainButtonStyle())
                 }
                 Button(action: {
-                    withAnimation{
+                    withAnimation(.spring()) {
                         activity = .start
                     }
                 }, label: {
@@ -106,18 +104,19 @@ struct ContentView: View {
                         .frame(width: 60, height: 30)
                         .background(Color.white)
                         .cornerRadius(5)
-
+                    
                 })
                 .buttonStyle(PlainButtonStyle())
             }
             .padding()
+            .foregroundColor(.black)
             
-
+            
+            
             , alignment: .topTrailing
         )
-        .foregroundColor(.black)
-
-//        .foregroundColor(.none)
+        
+        //        .foregroundColor(.none)
     }
 }
 
@@ -128,18 +127,35 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct CounterView: View {
+    let title: String
     let left: Int
     let right: Int
     var body: some View {
-        HStack(spacing: 0) {
-            Text(String(left))
-            Text(String(right))
+        VStack(spacing: 6) {
+            HStack(spacing: 0) {
+                LargeText(String(left))
+                LargeText(String(right))
+            }
+            .frame(width: 110, height: 70)
+            .background(Color.white)
+            .cornerRadius(12)
+            .foregroundColor(.black)
+            
+            Text("Seconds")
+                .font(.headline)
         }
-        .frame(width: 110, height: 70)
-        .background(Color.white)
-        .cornerRadius(12)
-        
-        .font(.system(size: 60, weight: .bold))
-        .foregroundColor(.black)
+        .frame(width: 110)
+    }
+}
+
+struct LargeText: View {
+    let text: String
+    
+    init(_ value: String) {
+        self.text = value
+    }
+    var body: some View {
+        Text(text)
+            .font(.system(size: 60, weight: .bold))
     }
 }
