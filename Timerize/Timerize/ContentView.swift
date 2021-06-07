@@ -19,7 +19,8 @@ enum  ActivityState {
 }
 struct ContentView: View {
     
-    @State private var activity: ActivityState = .unknown
+    @State private var activity: ActivityState = .start
+    @State private var progress: CGFloat = 0.0
     @Namespace private var animation
     var body: some View {
         ZStack {
@@ -38,19 +39,17 @@ struct ContentView: View {
                     .foregroundColor(.black)
                     
                     CounterView(title: "Seconds", left: 0, right: 0)
-
                     
                 }
                 .foregroundColor(.black)
                 .matchedGeometryEffect(id: "Counter", in: animation)
             }
             
-            VStack {
+            VStack(alignment: .leading) {
                 if activity == .start {
                     HStack {
                         
                         LargeText("9")
-                            .foregroundColor(.white)
                         VStack {
                             Circle()
                                 .frame(width: 16, height: 16)
@@ -58,26 +57,30 @@ struct ContentView: View {
                                 .frame(width: 16, height: 16)
                         }
                         .frame(width: 40, height: 70)
-                        .foregroundColor(.white)
                         
                         HStack(spacing: 0) {
                             LargeText("5")
                             LargeText("9")
                         }
-                        .foregroundColor(.white)
                         
                     }
+                    .foregroundColor(.white)
+
                     .padding()
                     .matchedGeometryEffect(id: "Counter", in: animation)
+                    Spacer()
+                    
+                    ProgressBar(initialProgress: $progress, color: .white)
+                        .frame(height: 10)
+                        .padding(.bottom, 100)
                 }
-                Spacer()
                 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding( 50)
             
         }
-        .frame(minWidth: 600, maxWidth: .infinity, minHeight: 500, maxHeight: 800)
+        .frame(minWidth: 400, maxWidth: .infinity, minHeight: 300, maxHeight: 800)
         .background(activity != .start ? Color.pinkColor : Color.purpleColor)
         .overlay(
             HStack {
@@ -115,8 +118,13 @@ struct ContentView: View {
             
             , alignment: .topTrailing
         )
-        
-        //        .foregroundColor(.none)
+        .onAppear(perform: start)
+    }
+    
+    func start() {
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+            self.progress += 0.1
+        }
     }
 }
 
@@ -157,5 +165,35 @@ struct LargeText: View {
     var body: some View {
         Text(text)
             .font(.system(size: 60, weight: .bold))
+    }
+}
+
+struct ProgressBar: View {
+
+    @Binding var progress: CGFloat
+
+    private var barColor: Color
+    private var animationTime: TimeInterval = 0.3
+
+    public init(initialProgress: Binding<CGFloat>, color: Color) {
+        self._progress = initialProgress
+        self.barColor = color
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                // Main Bar
+                Rectangle()
+                    .fill(Color.black.opacity(0.8))
+
+                // Progress Bar
+                Rectangle()
+                    .fill(barColor)
+                    .frame(width: min(geo.size.width, geo.size.width * progress))
+                    
+                    .animation(.linear)
+            }.cornerRadius(25.0)
+        }
     }
 }
