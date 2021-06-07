@@ -19,43 +19,15 @@ enum  ActivityState {
 }
 struct ContentView: View {
     
-    @State private var activity: ActivityState = .unknown
+    @State private var activity: ActivityState = .start
+    @State private var progress: CGFloat = 0.0
     @Namespace private var animation
     var body: some View {
         ZStack {
             if activity != .start {
-            HStack {
-                
-                VStack(spacing: 6) {
-                    CounterView(left: 1, right: 0)
-                    Text("Minutes")
-                        .font(.headline)
-                }
-                
-                VStack {
-                    Circle()
-                        .frame(width: 16, height: 16)
-                    Circle()
-                        .frame(width: 16, height: 16)
-                }
-                .frame(width: 40, height: 70)
-                VStack(spacing: 6) {
-                    CounterView(left: 0, right: 0)
-                    Text("Seconds")
-                        .font(.headline)
-                }
-
-            }
-            .matchedGeometryEffect(id: "Counter", in: animation)
-            }
-            VStack {
-                if activity == .start {
                 HStack {
-                    VStack(spacing: 6) {
-                        CounterView(left: 1, right: 0)
-                        Text("Minutes")
-                            .font(.headline)
-                    }
+                    
+                    CounterView(title: "Minutes", left: 1, right: 0)
                     
                     VStack {
                         Circle()
@@ -64,28 +36,57 @@ struct ContentView: View {
                             .frame(width: 16, height: 16)
                     }
                     .frame(width: 40, height: 70)
-                    VStack(spacing: 6) {
-                        CounterView(left: 0, right: 0)
-                        Text("Seconds")
-                            .font(.headline)
-                    }
+                    .foregroundColor(.black)
+                    
+                    CounterView(title: "Seconds", left: 0, right: 0)
+                    
                 }
-                .padding()
+                .foregroundColor(.black)
                 .matchedGeometryEffect(id: "Counter", in: animation)
+            }
+            
+            VStack(alignment: .leading) {
+                if activity == .start {
+                    HStack {
+                        
+                        LargeText("9")
+                        VStack {
+                            Circle()
+                                .frame(width: 16, height: 16)
+                            Circle()
+                                .frame(width: 16, height: 16)
+                        }
+                        .frame(width: 40, height: 70)
+                        
+                        HStack(spacing: 0) {
+                            LargeText("5")
+                            LargeText("9")
+                        }
+                        
+                    }
+                    .foregroundColor(.white)
+
+                    .padding()
+                    .matchedGeometryEffect(id: "Counter", in: animation)
+                    Spacer()
+                    
+                    ProgressBar(initialProgress: $progress, color: .white)
+                        .frame(height: 10)
+                        .padding(.bottom, 100)
                 }
-                Spacer()
                 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding( 50)
             
         }
-        .frame(minWidth: 600, maxWidth: .infinity, minHeight: 500, maxHeight: 1000)
+        .frame(minWidth: 400, maxWidth: .infinity, minHeight: 300, maxHeight: 800)
         .background(activity != .start ? Color.pinkColor : Color.purpleColor)
         .overlay(
             HStack {
                 if activity == .start {
                     Button(action: {
-                        withAnimation {
+                        withAnimation(.spring()) {
                             activity = .unknown
                         }
                     }, label: {
@@ -93,12 +94,12 @@ struct ContentView: View {
                             .frame(width: 60, height: 30)
                             .background(Color.white)
                             .cornerRadius(5)
-
+                        
                     })
                     .buttonStyle(PlainButtonStyle())
                 }
                 Button(action: {
-                    withAnimation{
+                    withAnimation(.spring()) {
                         activity = .start
                     }
                 }, label: {
@@ -106,18 +107,24 @@ struct ContentView: View {
                         .frame(width: 60, height: 30)
                         .background(Color.white)
                         .cornerRadius(5)
-
+                    
                 })
                 .buttonStyle(PlainButtonStyle())
             }
             .padding()
+            .foregroundColor(.black)
             
-
+            
+            
             , alignment: .topTrailing
         )
-        .foregroundColor(.black)
-
-//        .foregroundColor(.none)
+        .onAppear(perform: start)
+    }
+    
+    func start() {
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
+            self.progress += 0.1
+        }
     }
 }
 
@@ -128,18 +135,65 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct CounterView: View {
+    let title: String
     let left: Int
     let right: Int
     var body: some View {
-        HStack(spacing: 0) {
-            Text(String(left))
-            Text(String(right))
+        VStack(spacing: 6) {
+            HStack(spacing: 0) {
+                LargeText(String(left))
+                LargeText(String(right))
+            }
+            .frame(width: 110, height: 70)
+            .background(Color.white)
+            .cornerRadius(12)
+            .foregroundColor(.black)
+            
+            Text("Seconds")
+                .font(.headline)
         }
-        .frame(width: 110, height: 70)
-        .background(Color.white)
-        .cornerRadius(12)
-        
-        .font(.system(size: 60, weight: .bold))
-        .foregroundColor(.black)
+        .frame(width: 110)
+    }
+}
+
+struct LargeText: View {
+    let text: String
+    
+    init(_ value: String) {
+        self.text = value
+    }
+    var body: some View {
+        Text(text)
+            .font(.system(size: 60, weight: .bold))
+    }
+}
+
+struct ProgressBar: View {
+
+    @Binding var progress: CGFloat
+
+    private var barColor: Color
+    private var animationTime: TimeInterval = 0.3
+
+    public init(initialProgress: Binding<CGFloat>, color: Color) {
+        self._progress = initialProgress
+        self.barColor = color
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                // Main Bar
+                Rectangle()
+                    .fill(Color.black.opacity(0.8))
+
+                // Progress Bar
+                Rectangle()
+                    .fill(barColor)
+                    .frame(width: min(geo.size.width, geo.size.width * progress))
+                    
+                    .animation(.linear)
+            }.cornerRadius(25.0)
+        }
     }
 }
