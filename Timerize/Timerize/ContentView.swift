@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-extension Color {
-    static let pinkColor =  Color(red: 0.999, green: 0.825, blue: 0.846)
-    
-    static let purpleColor = Color(red: 0.372, green: 0.186, blue: 0.848)
-}
-
-
 struct ContentView: View {
     
     @StateObject var timerManager = TimerStoreModel()
@@ -55,10 +48,6 @@ struct ContentView: View {
             VStack(alignment: .leading) {
                 if timerManager.timerMode != .initial {
                     HStack(spacing: 8) {
-//                        Text(secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))
-//                            .font(Font.system(size: 60, weight: .bold))
-//                            .frame(width: 200, alignment: .leading)
-                        
                         let (_, min, sec) = secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft)
                        
                         HStack(spacing: 0) {
