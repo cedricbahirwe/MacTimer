@@ -23,7 +23,7 @@ struct ContentView: View {
     @Namespace private var animation
     var body: some View {
         ZStack {
-            if timerManager.timerMode != .running {
+            if timerManager.timerMode == .initial {
                 HStack {
                     
                     CounterView(title: "Minutes", left: 1, right: 0)
@@ -45,7 +45,7 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading) {
-                if timerManager.timerMode == .running {
+                if timerManager.timerMode != .initial {
                     HStack {
                         Text(secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))
                             .font(Font.system(size: 60, weight: .bold))
@@ -85,7 +85,7 @@ struct ContentView: View {
         .frame(minWidth: 400, maxWidth: 800, minHeight: 300, maxHeight: 600)
         .overlay(
             HStack {
-                if timerManager.timerMode == .running {
+                if timerManager.timerMode == .paused {
                     Button(action: {
                         withAnimation(.spring()) {
                             timerManager.resetCounter()
@@ -119,9 +119,19 @@ struct ContentView: View {
         .frame(
             maxWidth: (NSScreen.main?.frame.size.width ?? 1000) * 0.8,
             maxHeight: (NSScreen.main?.frame.size.height ?? 800) * 0.8)
-        .background(timerManager.timerMode != .running ? Color.pinkColor : Color.purpleColor)
+        .background(mainBackground())
     }
     
+    private func mainBackground() -> Color {
+        switch timerManager.timerMode {
+        case .initial:
+            return .pinkColor
+        case .running:
+            return .purpleColor
+        case .paused:
+            return Color(.systemIndigo)
+        }
+    }
     
     private func startCounting() {
         if timerManager.timerMode == .initial {
