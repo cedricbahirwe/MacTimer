@@ -14,6 +14,8 @@ public enum TimerMode {
 }
 
 class TimerStoreModel: ObservableObject {
+    let defaults = UserDefaults.standard
+
     @Published var timerMode: TimerMode = .initial
     @Published var secondsLeft = UserDefaults.standard.integer(forKey: "timerLength")
 //        {
@@ -30,7 +32,8 @@ class TimerStoreModel: ObservableObject {
             if self.secondsLeft == 0 {
                 self.resetCounter()
             }
-            self.secondsLeft -= 1
+            self.secondsLeft -= 10
+            
             
         })
         
@@ -38,7 +41,7 @@ class TimerStoreModel: ObservableObject {
     
     public func resetCounter() {
         timerMode = .initial
-        secondsLeft = UserDefaults.standard.integer(forKey: "timerLength")
+        secondsLeft = defaults.integer(forKey: "timerLength")
         timer.invalidate()
     }
     
@@ -48,7 +51,6 @@ class TimerStoreModel: ObservableObject {
     }
     
     public func setTimerLength(minutes: Int) {
-        let defaults = UserDefaults.standard
         defaults.set(minutes, forKey: "timerLength")
         secondsLeft = minutes
     }

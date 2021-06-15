@@ -14,20 +14,16 @@ extension Color {
 }
 
 
-enum  ActivityState {
-    case start, pause, resume , stop, unknown
-}
 struct ContentView: View {
     
     @StateObject var timerManager = TimerStoreModel()
 
     @State var selectedPickedTime = 10
     
-    @State private var activity: ActivityState = .unknown
     @Namespace private var animation
     var body: some View {
         ZStack {
-            if activity != .start {
+            if timerManager.timerMode != .running {
                 HStack {
                     
                     CounterView(title: "Minutes", left: 1, right: 0)
@@ -49,7 +45,7 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading) {
-                if activity == .start {
+                if timerManager.timerMode == .running {
                     HStack {
                         Text(secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))
                             .font(Font.system(size: 60, weight: .bold))
@@ -86,14 +82,12 @@ struct ContentView: View {
             .padding( 50)
             
         }
-        .frame(minWidth: 400, maxWidth: .infinity, minHeight: 300, maxHeight: 800)
-        .background(activity != .start ? Color.pinkColor : Color.purpleColor)
+        .frame(minWidth: 400, maxWidth: 800, minHeight: 300, maxHeight: 600)
         .overlay(
             HStack {
-                if activity == .start {
+                if timerManager.timerMode == .running {
                     Button(action: {
                         withAnimation(.spring()) {
-                            activity = .unknown
                             timerManager.resetCounter()
                         }
                     }, label: {
@@ -107,7 +101,6 @@ struct ContentView: View {
                 }
                 Button(action: {
                     withAnimation(.spring()) {
-                        activity = .start
                         startCounting()
                     }
                 }, label: {
@@ -121,19 +114,21 @@ struct ContentView: View {
             }
             .padding()
             .foregroundColor(.black)
-            
-            
-            
             , alignment: .topTrailing
         )
-//        .onAppear(perform: start)
+        .frame(
+            maxWidth: (NSScreen.main?.frame.size.width ?? 1000) * 0.8,
+            maxHeight: (NSScreen.main?.frame.size.height ?? 800) * 0.8)
+        .background(timerManager.timerMode != .running ? Color.pinkColor : Color.purpleColor)
     }
     
     
-    func startCounting() {
+    private func startCounting() {
         if timerManager.timerMode == .initial {
-            timerManager.setTimerLength(minutes: selectedPickedTime * 60)
+            let minutes = selectedPickedTime * 60
+            timerManager.setTimerLength(minutes: minutes)
         }
+        
         if timerManager.timerMode == .running  {
             timerManager.pauseCounter()
         } else {
@@ -141,7 +136,7 @@ struct ContentView: View {
         }
     }
     
-    func secondsToMinutesAndSeconds (seconds : Int) -> String {
+    private func secondsToMinutesAndSeconds (seconds : Int) -> String {
         let minutes = "\((seconds % 3600) / 60)"
         let seconds = "\((seconds % 3600) % 60)"
         let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
@@ -190,38 +185,3 @@ struct LargeText: View {
     }
 }
 
-struct ProgressBar: View {
-
-    let progress: CGFloat
-
-    private var barColor: Color
-    private var animationTime: TimeInterval = 0.3
-
-    public init(initialProgress: CGFloat, color: Color) {
-        self.progress = initialProgress
-        self.barColor = color
-    }
-    
-    
-    var computedColor: Color {
-        return progress == 1.0 ? barColor : progress > 0.7 ? .green : progress > 0.6 ? .yellow : .red
-    }
-    
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                // Main Bar
-                Rectangle()
-                    .fill(Color.black.opacity(0.8))
-
-                // Progress Bar
-                Rectangle()
-                    .fill(computedColor)
-                    .frame(width: min(geo.size.width, geo.size.width * progress))
-                    
-                    .animation(.linear)
-            }.cornerRadius(25.0)
-        }
-    }
-}
