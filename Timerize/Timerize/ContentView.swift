@@ -19,7 +19,11 @@ enum  ActivityState {
 }
 struct ContentView: View {
     
-    @State private var activity: ActivityState = .start
+    @StateObject var timerManager = TimerStoreModel()
+    let availableMinutes = Array(1...59)
+    @State var selectedPickedTime = 10
+    
+    @State private var activity: ActivityState = .unknown
     @State private var progress: CGFloat = 0.0
     @Namespace private var animation
     var body: some View {
@@ -48,20 +52,21 @@ struct ContentView: View {
             VStack(alignment: .leading) {
                 if activity == .start {
                     HStack {
-                        
-                        LargeText("9")
-                        VStack {
-                            Circle()
-                                .frame(width: 16, height: 16)
-                            Circle()
-                                .frame(width: 16, height: 16)
-                        }
-                        .frame(width: 40, height: 70)
-                        
-                        HStack(spacing: 0) {
-                            LargeText("5")
-                            LargeText("9")
-                        }
+                        Text("\(self.secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))")
+                            .font(.system(size: 60, weight: .bold))
+//                        LargeText("9")
+//                        VStack {
+//                            Circle()
+//                                .frame(width: 16, height: 16)
+//                            Circle()
+//                                .frame(width: 16, height: 16)
+//                        }
+//                        .frame(width: 40, height: 70)
+//
+//                        HStack(spacing: 0) {
+//                            LargeText("5")
+//                            LargeText("9")
+//                        }
                         
                     }
                     .foregroundColor(.white)
@@ -88,6 +93,7 @@ struct ContentView: View {
                     Button(action: {
                         withAnimation(.spring()) {
                             activity = .unknown
+                            timerManager.reset()
                         }
                     }, label: {
                         Text("Reset")
@@ -101,9 +107,10 @@ struct ContentView: View {
                 Button(action: {
                     withAnimation(.spring()) {
                         activity = .start
+                        startCounting()
                     }
                 }, label: {
-                    Text("Start")
+                    Text(timerManager.timerMode == .running  ? "Pause" : "Start")
                         .frame(width: 60, height: 30)
                         .background(Color.white)
                         .cornerRadius(5)
@@ -118,13 +125,32 @@ struct ContentView: View {
             
             , alignment: .topTrailing
         )
-        .onAppear(perform: start)
+//        .onAppear(perform: start)
     }
     
     func start() {
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
             self.progress += 0.1
         }
+    }
+    
+    func startCounting() {
+        if timerManager.timerMode == .initial {
+            timerManager.setTimerLength(minutes: availableMinutes[selectedPickedTime] * 60)
+        }
+        if timerManager.timerMode == .running  {
+            timerManager.pause()
+        } else {
+            timerManager.start()
+        }
+    }
+    
+    func secondsToMinutesAndSeconds (seconds : Int) -> String {
+        let minutes = "\((seconds % 3600) / 60)"
+        let seconds = "\((seconds % 3600) % 60)"
+        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
+        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
+        return "\(minuteStamp):\(secondStamp)"
     }
 }
 

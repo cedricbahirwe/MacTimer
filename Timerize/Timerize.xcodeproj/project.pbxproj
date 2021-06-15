@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		82B94C072679364200734A79 /* TimerStoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B94C062679364200734A79 /* TimerStoreModel.swift */; };
 		82F39AA9266D696800763147 /* TimerizeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F39AA8266D696800763147 /* TimerizeApp.swift */; };
 		82F39AAB266D696800763147 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F39AAA266D696800763147 /* ContentView.swift */; };
 		82F39AAD266D696A00763147 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82F39AAC266D696A00763147 /* Assets.xcassets */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		82B94C062679364200734A79 /* TimerStoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStoreModel.swift; sourceTree = "<group>"; };
 		82F39AA5266D696800763147 /* Timerize.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timerize.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82F39AA8266D696800763147 /* TimerizeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerizeApp.swift; sourceTree = "<group>"; };
 		82F39AAA266D696800763147 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			children = (
 				82F39AA8266D696800763147 /* TimerizeApp.swift */,
 				82F39AAA266D696800763147 /* ContentView.swift */,
+				82B94C062679364200734A79 /* TimerStoreModel.swift */,
 				82F39AAC266D696A00763147 /* Assets.xcassets */,
 				82F39AB1266D696A00763147 /* Info.plist */,
 				82F39AB2266D696A00763147 /* Timerize.entitlements */,
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82F39AAB266D696800763147 /* ContentView.swift in Sources */,
+				82B94C072679364200734A79 /* TimerStoreModel.swift in Sources */,
 				82F39AA9266D696800763147 /* TimerizeApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
