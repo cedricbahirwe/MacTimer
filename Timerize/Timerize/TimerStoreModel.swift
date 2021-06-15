@@ -22,14 +22,13 @@ class TimerStoreModel: ObservableObject {
 //        }
 //    }
     var timer = Timer()
-//    let objectWillChange = PassthroughSubject<TimerManager, Never >()
     
-    func start() {
+    public func startCounter() {
         timerMode = .running
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
 
             if self.secondsLeft == 0 {
-                self.reset()
+                self.resetCounter()
             }
             self.secondsLeft -= 1
             
@@ -37,22 +36,20 @@ class TimerStoreModel: ObservableObject {
         
     }
     
-    func reset() {
+    public func resetCounter() {
         timerMode = .initial
         secondsLeft = UserDefaults.standard.integer(forKey: "timerLength")
         timer.invalidate()
     }
     
-    func pause() {
+    public func pauseCounter() {
         timerMode = .paused
         timer.invalidate()
     }
     
-    func setTimerLength(minutes: Int) {
+    public func setTimerLength(minutes: Int) {
         let defaults = UserDefaults.standard
         defaults.set(minutes, forKey: "timerLength")
         secondsLeft = minutes
-        
-        
     }
 }

@@ -20,11 +20,10 @@ enum  ActivityState {
 struct ContentView: View {
     
     @StateObject var timerManager = TimerStoreModel()
-    let availableMinutes = Array(1...59)
+
     @State var selectedPickedTime = 10
     
     @State private var activity: ActivityState = .unknown
-    @State private var progress: CGFloat = 0.0
     @Namespace private var animation
     var body: some View {
         ZStack {
@@ -52,8 +51,10 @@ struct ContentView: View {
             VStack(alignment: .leading) {
                 if activity == .start {
                     HStack {
-                        Text("\(self.secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))")
-                            .font(.system(size: 60, weight: .bold))
+                        Text(secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft))
+                            .font(Font.system(size: 60, weight: .bold))
+                            .frame(width: 200, alignment: .leading)
+                            
 //                        LargeText("9")
 //                        VStack {
 //                            Circle()
@@ -74,8 +75,8 @@ struct ContentView: View {
                     .padding()
                     .matchedGeometryEffect(id: "Counter", in: animation)
                     Spacer()
-                    
-                    ProgressBar(initialProgress: $progress, color: .white)
+                    let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(selectedPickedTime)
+                    ProgressBar(initialProgress: progress, color: .white)
                         .frame(height: 10)
                         .padding(.bottom, 100)
                 }
@@ -93,7 +94,7 @@ struct ContentView: View {
                     Button(action: {
                         withAnimation(.spring()) {
                             activity = .unknown
-                            timerManager.reset()
+                            timerManager.resetCounter()
                         }
                     }, label: {
                         Text("Reset")
@@ -128,20 +129,15 @@ struct ContentView: View {
 //        .onAppear(perform: start)
     }
     
-    func start() {
-        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
-            self.progress += 0.1
-        }
-    }
     
     func startCounting() {
         if timerManager.timerMode == .initial {
-            timerManager.setTimerLength(minutes: availableMinutes[selectedPickedTime] * 60)
+            timerManager.setTimerLength(minutes: selectedPickedTime * 60)
         }
         if timerManager.timerMode == .running  {
-            timerManager.pause()
+            timerManager.pauseCounter()
         } else {
-            timerManager.start()
+            timerManager.startCounter()
         }
     }
     
@@ -196,15 +192,21 @@ struct LargeText: View {
 
 struct ProgressBar: View {
 
-    @Binding var progress: CGFloat
+    let progress: CGFloat
 
     private var barColor: Color
     private var animationTime: TimeInterval = 0.3
 
-    public init(initialProgress: Binding<CGFloat>, color: Color) {
-        self._progress = initialProgress
+    public init(initialProgress: CGFloat, color: Color) {
+        self.progress = initialProgress
         self.barColor = color
     }
+    
+    
+    var computedColor: Color {
+        return progress == 1.0 ? barColor : progress > 0.7 ? .green : progress > 0.6 ? .yellow : .red
+    }
+    
 
     var body: some View {
         GeometryReader { geo in
@@ -215,7 +217,7 @@ struct ProgressBar: View {
 
                 // Progress Bar
                 Rectangle()
-                    .fill(barColor)
+                    .fill(computedColor)
                     .frame(width: min(geo.size.width, geo.size.width * progress))
                     
                     .animation(.linear)
