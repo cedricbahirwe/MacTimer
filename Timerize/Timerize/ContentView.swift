@@ -7,38 +7,38 @@
 
 import SwiftUI
 
-extension Color {
-    static let pinkColor =  Color(red: 0.999, green: 0.825, blue: 0.846)
-    
-    static let purpleColor = Color(red: 0.372, green: 0.186, blue: 0.848)
-}
-
-
-enum  ActivityState {
-    case start, pause, resume , stop, unknown
-}
 struct ContentView: View {
     
-    @State private var activity: ActivityState = .start
-    @State private var progress: CGFloat = 0.0
+    @StateObject var timerManager = TimerStoreModel()
+
+    @State var selectedPickedTime = 22
+    
     @Namespace private var animation
     var body: some View {
         ZStack {
-            if activity != .start {
+            if timerManager.timerMode == .initial {
                 HStack {
                     
-                    CounterView(title: "Minutes", left: 1, right: 0)
+                    let (_, min, sec) = secondsToMinutesAndSeconds(seconds: selectedPickedTime*60)
+                    CounterView(title: "Minutes",
+                                left: String(min.first!),
+                                right: String(min.last!))
                     
                     VStack {
                         Circle()
                             .frame(width: 16, height: 16)
+                        
                         Circle()
                             .frame(width: 16, height: 16)
                     }
-                    .frame(width: 40, height: 70)
+                    .frame(width: 40)
                     .foregroundColor(.black)
+                    .offset(y: -8)
                     
-                    CounterView(title: "Seconds", left: 0, right: 0)
+                    CounterView(title: "Seconds",
+                                left: String(sec.first!),
+                                right: String(sec.last!))
+
                     
                 }
                 .foregroundColor(.black)
@@ -46,21 +46,24 @@ struct ContentView: View {
             }
             
             VStack(alignment: .leading) {
-                if activity == .start {
-                    HStack {
-                        
-                        LargeText("9")
-                        VStack {
-                            Circle()
-                                .frame(width: 16, height: 16)
-                            Circle()
-                                .frame(width: 16, height: 16)
-                        }
-                        .frame(width: 40, height: 70)
-                        
+                if timerManager.timerMode != .initial {
+                    HStack(spacing: 8) {
+                        let (_, min, sec) = secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft)
+                       
                         HStack(spacing: 0) {
-                            LargeText("5")
-                            LargeText("9")
+                            LargeText(String(min.first!))
+                            LargeText(String(min.last!))
+                        }
+                        VStack(spacing: 8) {
+                            Circle()
+                                .frame(width: 12, height: 12)
+                            Circle()
+                                .frame(width: 12, height: 12)
+                        }
+
+                        HStack(spacing: 0) {
+                            LargeText(String(sec.first!))
+                            LargeText(String(sec.last!))
                         }
                         
                     }
@@ -69,8 +72,8 @@ struct ContentView: View {
                     .padding()
                     .matchedGeometryEffect(id: "Counter", in: animation)
                     Spacer()
-                    
-                    ProgressBar(initialProgress: $progress, color: .white)
+                    let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(selectedPickedTime)
+                    ProgressBar(initialProgress: progress, color: .green)
                         .frame(height: 10)
                         .padding(.bottom, 100)
                 }
@@ -80,14 +83,13 @@ struct ContentView: View {
             .padding( 50)
             
         }
-        .frame(minWidth: 400, maxWidth: .infinity, minHeight: 300, maxHeight: 800)
-        .background(activity != .start ? Color.pinkColor : Color.purpleColor)
+        .frame(minWidth: 400, maxWidth: 800, minHeight: 300, maxHeight: 600)
         .overlay(
             HStack {
-                if activity == .start {
+                if timerManager.timerMode == .paused {
                     Button(action: {
                         withAnimation(.spring()) {
-                            activity = .unknown
+                            timerManager.resetCounter()
                         }
                     }, label: {
                         Text("Reset")
@@ -100,10 +102,10 @@ struct ContentView: View {
                 }
                 Button(action: {
                     withAnimation(.spring()) {
-                        activity = .start
+                        startCounting()
                     }
                 }, label: {
-                    Text("Start")
+                    Text(timerManager.timerMode == .running  ? "Pause" : "Start")
                         .frame(width: 60, height: 30)
                         .background(Color.white)
                         .cornerRadius(5)
@@ -113,18 +115,54 @@ struct ContentView: View {
             }
             .padding()
             .foregroundColor(.black)
-            
-            
-            
             , alignment: .topTrailing
         )
-        .onAppear(perform: start)
+        .frame(
+            maxWidth: (NSScreen.main?.frame.size.width ?? 1000) * 0.8,
+            maxHeight: (NSScreen.main?.frame.size.height ?? 800) * 0.8)
+        .background(mainBackground())
     }
     
-    func start() {
-        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { timer in
-            self.progress += 0.1
+    private func mainBackground() -> Color {
+        switch timerManager.timerMode {
+        case .initial:
+            return .pinkColor
+        case .running:
+            return .purpleColor
+        case .paused:
+            return Color(.systemIndigo)
         }
+    }
+    
+    private func startCounting() {
+        if timerManager.timerMode == .initial {
+            let minutes = selectedPickedTime * 60
+            timerManager.setTimerLength(minutes: minutes)
+        }
+        
+        if timerManager.timerMode == .running  {
+            timerManager.pauseCounter()
+        } else {
+            timerManager.startCounter()
+        }
+    }
+    
+    private func secondsToMinutesAndSeconds (seconds : Int) -> String {
+        let minutes = "\((seconds % 3600) / 60)"
+        let seconds = "\((seconds % 3600) % 60)"
+        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
+        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
+        return "\(minuteStamp) : \(secondStamp)"
+    }
+    
+    private func secondsToMinutesAndSeconds (seconds : Int) -> (hrs:String, min:String, sec: String) {
+        let hours = "\(seconds / 3600)"
+        let minutes = "\((seconds % 3600) / 60)"
+        let seconds = "\((seconds % 3600) % 60)"
+        let hourStamp = hours.count > 1 ? hours : "0" + hours
+        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
+        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
+        return (hourStamp, minuteStamp, secondStamp)
     }
 }
 
@@ -136,20 +174,20 @@ struct ContentView_Previews: PreviewProvider {
 
 struct CounterView: View {
     let title: String
-    let left: Int
-    let right: Int
+    let left: String
+    let right: String
     var body: some View {
         VStack(spacing: 6) {
             HStack(spacing: 0) {
-                LargeText(String(left))
-                LargeText(String(right))
+                LargeText(left)
+                LargeText(right)
             }
             .frame(width: 110, height: 70)
             .background(Color.white)
             .cornerRadius(12)
             .foregroundColor(.black)
             
-            Text("Seconds")
+            Text(title)
                 .font(.headline)
         }
         .frame(width: 110)
@@ -168,32 +206,3 @@ struct LargeText: View {
     }
 }
 
-struct ProgressBar: View {
-
-    @Binding var progress: CGFloat
-
-    private var barColor: Color
-    private var animationTime: TimeInterval = 0.3
-
-    public init(initialProgress: Binding<CGFloat>, color: Color) {
-        self._progress = initialProgress
-        self.barColor = color
-    }
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                // Main Bar
-                Rectangle()
-                    .fill(Color.black.opacity(0.8))
-
-                // Progress Bar
-                Rectangle()
-                    .fill(barColor)
-                    .frame(width: min(geo.size.width, geo.size.width * progress))
-                    
-                    .animation(.linear)
-            }.cornerRadius(25.0)
-        }
-    }
-}
