@@ -10,8 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject var timerManager = TimerStoreModel()
-
-    @State var selectedPickedTime = 22
     
     @Namespace private var animation
     var body: some View {
@@ -19,7 +17,7 @@ struct ContentView: View {
             if timerManager.timerMode == .initial {
                 HStack {
                     
-                    let (_, min, sec) = secondsToMinutesAndSeconds(seconds: selectedPickedTime*60)
+                    let (_, min, sec) = timerManager.secondsToMinutesAndSeconds(seconds: timerManager.selectedPickedTime*60)
                     CounterView(title: "Minutes",
                                 left: String(min.first!),
                                 right: String(min.last!))
@@ -48,7 +46,7 @@ struct ContentView: View {
             VStack(alignment: .leading) {
                 if timerManager.timerMode != .initial {
                     HStack(spacing: 8) {
-                        let (_, min, sec) = secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft)
+                        let (_, min, sec) = timerManager.secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft)
                        
                         HStack(spacing: 0) {
                             LargeText(String(min.first!))
@@ -72,7 +70,7 @@ struct ContentView: View {
                     .padding()
                     .matchedGeometryEffect(id: "Counter", in: animation)
                     Spacer()
-                    let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(selectedPickedTime)
+                    let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(timerManager.selectedPickedTime)
                     ProgressBar(initialProgress: progress, color: .pureBlue)
                         .frame(height: 10)
                         .padding(.bottom, 100)
@@ -102,7 +100,7 @@ struct ContentView: View {
                 }
                 Button(action: {
                     withAnimation(.spring()) {
-                        startCounting()
+                        timerManager.startCounting()
                     }
                 }, label: {
                     Text(timerManager.timerMode == .running  ? "Pause" : "Start")
@@ -134,36 +132,6 @@ struct ContentView: View {
         }
     }
     
-    private func startCounting() {
-        if timerManager.timerMode == .initial {
-            let minutes = selectedPickedTime * 60
-            timerManager.setTimerLength(minutes: minutes)
-        }
-        
-        if timerManager.timerMode == .running  {
-            timerManager.pauseCounter()
-        } else {
-            timerManager.startCounter()
-        }
-    }
-    
-    private func secondsToMinutesAndSeconds (seconds : Int) -> String {
-        let minutes = "\((seconds % 3600) / 60)"
-        let seconds = "\((seconds % 3600) % 60)"
-        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
-        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
-        return "\(minuteStamp) : \(secondStamp)"
-    }
-    
-    private func secondsToMinutesAndSeconds (seconds : Int) -> (hrs:String, min:String, sec: String) {
-        let hours = "\(seconds / 3600)"
-        let minutes = "\((seconds % 3600) / 60)"
-        let seconds = "\((seconds % 3600) % 60)"
-        let hourStamp = hours.count > 1 ? hours : "0" + hours
-        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
-        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
-        return (hourStamp, minuteStamp, secondStamp)
-    }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -171,38 +139,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-struct CounterView: View {
-    let title: String
-    let left: String
-    let right: String
-    var body: some View {
-        VStack(spacing: 6) {
-            HStack(spacing: 0) {
-                LargeText(left)
-                LargeText(right)
-            }
-            .frame(width: 110, height: 70)
-            .background(Color.white)
-            .cornerRadius(12)
-            .foregroundColor(.black)
-            
-            Text(title)
-                .font(.headline)
-        }
-        .frame(width: 110)
-    }
-}
-
-struct LargeText: View {
-    let text: String
-    
-    init(_ value: String) {
-        self.text = value
-    }
-    var body: some View {
-        Text(text)
-            .font(.system(size: 60, weight: .bold))
-    }
-}
-
