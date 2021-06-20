@@ -91,28 +91,32 @@ struct ContentView: View {
             HStack {
                 if timerManager.timerMode == .paused {
                     Button(action: {
-                        withAnimation(.spring()) {
+                        withAnimation(.linear) {
                             timerManager.resetCounter()
                         }
                     }, label: {
                         Text("Reset")
+                            .fontWeight(.semibold)
                             .frame(width: 60, height: 30)
                             .background(Color.white)
                             .cornerRadius(5)
-                        
+                            .shadow(radius: 0.5)
                     })
                     .buttonStyle(PlainButtonStyle())
+                    .transition(.move(edge: .trailing))
                 }
                 Button(action: {
-                    withAnimation(.spring()) {
+                    withAnimation(.linear) {
                         timerManager.startCounting()
                     }
                 }, label: {
-                    Text(timerManager.timerMode == .running  ? "Pause" : "Start")
-                        .frame(width: 60, height: 30)
+                    Text(timerManager.timerMode == .running  ? "Pause" : timerManager.timerMode == .paused ? "Continue" : "Start")
+                        .fontWeight(.semibold)
+                        .padding(.horizontal)
+                        .frame(height: 30)
                         .background(Color.white)
                         .cornerRadius(5)
-                    
+                        .shadow(radius: 0.5)
                 })
                 .buttonStyle(PlainButtonStyle())
             }

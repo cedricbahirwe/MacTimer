@@ -27,7 +27,7 @@ class TimerStoreModel: ObservableObject {
             if self.secondsLeft == 0 {
                 self.resetCounter()
             }
-            self.secondsLeft -= 10
+            self.secondsLeft -= 1
             
         })
         
