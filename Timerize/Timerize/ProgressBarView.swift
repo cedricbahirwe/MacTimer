@@ -21,7 +21,7 @@ struct ProgressBar: View {
     
     
     var computedColor: Color {
-        return progress == 1.0 ? barColor : progress > 0.7 ? .green : progress > 0.3 ? .yellow : .red
+        return progress > 0.7 ? barColor : progress > 0.3 ? .yellow : .red
     }
     
 
@@ -30,13 +30,12 @@ struct ProgressBar: View {
             ZStack(alignment: .leading) {
                 // Main Bar
                 Rectangle()
-                    .fill(Color.black.opacity(0.8))
+                    .fill(Color(.systemGray).opacity(0.8))
 
                 // Progress Bar
                 Rectangle()
                     .fill(computedColor)
                     .frame(width: min(geo.size.width, geo.size.width * progress))
-                    
                     .animation(.linear)
             }.cornerRadius(25.0)
         }

@@ -6,7 +6,6 @@
 //
 
 
-import Combine
 import Foundation
 
 public enum TimerMode {
@@ -18,11 +17,6 @@ class TimerStoreModel: ObservableObject {
 
     @Published var timerMode: TimerMode = .initial
     @Published var secondsLeft = UserDefaults.standard.integer(forKey: UserDefaults.Keys.TimerLength)
-//        {
-//        didSet {
-//            objectWillChange.send(self)
-//        }
-//    }
     var timer = Timer()
     
     public func startCounter() {
@@ -33,7 +27,6 @@ class TimerStoreModel: ObservableObject {
                 self.resetCounter()
             }
             self.secondsLeft -= 10
-            
             
         })
         

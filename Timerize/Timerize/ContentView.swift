@@ -73,7 +73,7 @@ struct ContentView: View {
                     .matchedGeometryEffect(id: "Counter", in: animation)
                     Spacer()
                     let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(selectedPickedTime)
-                    ProgressBar(initialProgress: progress, color: .green)
+                    ProgressBar(initialProgress: progress, color: .pureBlue)
                         .frame(height: 10)
                         .padding(.bottom, 100)
                 }
@@ -128,9 +128,9 @@ struct ContentView: View {
         case .initial:
             return .pinkColor
         case .running:
-            return .purpleColor
+            return .mainBg
         case .paused:
-            return Color(.systemIndigo)
+            return Color.mainBg.opacity(0.5)
         }
     }
     
