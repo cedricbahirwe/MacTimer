@@ -6,7 +6,6 @@
 //
 
 
-import Combine
 import Foundation
 
 public enum TimerMode {
@@ -16,13 +15,9 @@ public enum TimerMode {
 class TimerStoreModel: ObservableObject {
     let defaults = UserDefaults.standard
 
+    @Published var selectedPickedTime = 22
     @Published var timerMode: TimerMode = .initial
     @Published var secondsLeft = UserDefaults.standard.integer(forKey: UserDefaults.Keys.TimerLength)
-//        {
-//        didSet {
-//            objectWillChange.send(self)
-//        }
-//    }
     var timer = Timer()
     
     public func startCounter() {
@@ -32,11 +27,23 @@ class TimerStoreModel: ObservableObject {
             if self.secondsLeft == 0 {
                 self.resetCounter()
             }
-            self.secondsLeft -= 10
-            
+            self.secondsLeft -= 1
             
         })
         
+    }
+    
+    public func startCounting() {
+        if timerMode == .initial {
+            let minutes = selectedPickedTime * 60
+            setTimerLength(minutes: minutes)
+        }
+        
+        if timerMode == .running  {
+            pauseCounter()
+        } else {
+            startCounter()
+        }
     }
     
     public func resetCounter() {
@@ -53,5 +60,28 @@ class TimerStoreModel: ObservableObject {
     public func setTimerLength(minutes: Int) {
         defaults.set(minutes, forKey: UserDefaults.Keys.TimerLength)
         secondsLeft = minutes
+    }
+    
+
+}
+
+extension TimerStoreModel {
+    
+    public func secondsToMinutesAndSeconds (seconds : Int) -> String {
+        let minutes = "\((seconds % 3600) / 60)"
+        let seconds = "\((seconds % 3600) % 60)"
+        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
+        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
+        return "\(minuteStamp) : \(secondStamp)"
+    }
+    
+    public func secondsToMinutesAndSeconds (seconds : Int) -> (hrs:String, min:String, sec: String) {
+        let hours = "\(seconds / 3600)"
+        let minutes = "\((seconds % 3600) / 60)"
+        let seconds = "\((seconds % 3600) % 60)"
+        let hourStamp = hours.count > 1 ? hours : "0" + hours
+        let minuteStamp = minutes.count > 1 ? minutes : "0" + minutes
+        let secondStamp = seconds.count > 1 ? seconds : "0" + seconds
+        return (hourStamp, minuteStamp, secondStamp)
     }
 }

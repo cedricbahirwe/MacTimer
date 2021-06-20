@@ -10,6 +10,8 @@
 		8281061126794AD900DA2FE6 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8281061026794AD900DA2FE6 /* ProgressBarView.swift */; };
 		828106162679548800DA2FE6 /* Color_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828106152679548800DA2FE6 /* Color_Extensions.swift */; };
 		828106192679551500DA2FE6 /* Util_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828106182679551500DA2FE6 /* Util_Extensions.swift */; };
+		8285EEFE267F63BF00BF7009 /* CounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8285EEFD267F63BF00BF7009 /* CounterView.swift */; };
+		8285EF04267F63F900BF7009 /* LargeText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8285EF03267F63F900BF7009 /* LargeText.swift */; };
 		82B94C072679364200734A79 /* TimerStoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B94C062679364200734A79 /* TimerStoreModel.swift */; };
 		82F39AA9266D696800763147 /* TimerizeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F39AA8266D696800763147 /* TimerizeApp.swift */; };
 		82F39AAB266D696800763147 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F39AAA266D696800763147 /* ContentView.swift */; };
@@ -21,6 +23,8 @@
 		8281061026794AD900DA2FE6 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		828106152679548800DA2FE6 /* Color_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color_Extensions.swift; sourceTree = "<group>"; };
 		828106182679551500DA2FE6 /* Util_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util_Extensions.swift; sourceTree = "<group>"; };
+		8285EEFD267F63BF00BF7009 /* CounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterView.swift; sourceTree = "<group>"; };
+		8285EF03267F63F900BF7009 /* LargeText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeText.swift; sourceTree = "<group>"; };
 		82B94C062679364200734A79 /* TimerStoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerStoreModel.swift; sourceTree = "<group>"; };
 		82F39AA5266D696800763147 /* Timerize.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timerize.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82F39AA8266D696800763147 /* TimerizeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerizeApp.swift; sourceTree = "<group>"; };
@@ -42,6 +46,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8285EF00267F63DC00BF7009 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8285EEFD267F63BF00BF7009 /* CounterView.swift */,
+				8285EF03267F63F900BF7009 /* LargeText.swift */,
+				8281061026794AD900DA2FE6 /* ProgressBarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8285EF01267F63E300BF7009 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8285EF02267F63EA00BF7009 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				828106152679548800DA2FE6 /* Color_Extensions.swift */,
+				828106182679551500DA2FE6 /* Util_Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		82F39A9C266D696800763147 = {
 			isa = PBXGroup;
 			children = (
@@ -63,10 +93,10 @@
 			children = (
 				82F39AA8266D696800763147 /* TimerizeApp.swift */,
 				82F39AAA266D696800763147 /* ContentView.swift */,
-				828106152679548800DA2FE6 /* Color_Extensions.swift */,
 				82B94C062679364200734A79 /* TimerStoreModel.swift */,
-				8281061026794AD900DA2FE6 /* ProgressBarView.swift */,
-				828106182679551500DA2FE6 /* Util_Extensions.swift */,
+				8285EF02267F63EA00BF7009 /* Helpers */,
+				8285EF01267F63E300BF7009 /* Models */,
+				8285EF00267F63DC00BF7009 /* Views */,
 				82F39AAC266D696A00763147 /* Assets.xcassets */,
 				82F39AB1266D696A00763147 /* Info.plist */,
 				82F39AB2266D696A00763147 /* Timerize.entitlements */,
@@ -154,7 +184,9 @@
 			files = (
 				82F39AAB266D696800763147 /* ContentView.swift in Sources */,
 				828106192679551500DA2FE6 /* Util_Extensions.swift in Sources */,
+				8285EF04267F63F900BF7009 /* LargeText.swift in Sources */,
 				828106162679548800DA2FE6 /* Color_Extensions.swift in Sources */,
+				8285EEFE267F63BF00BF7009 /* CounterView.swift in Sources */,
 				82B94C072679364200734A79 /* TimerStoreModel.swift in Sources */,
 				82F39AA9266D696800763147 /* TimerizeApp.swift in Sources */,
 				8281061126794AD900DA2FE6 /* ProgressBarView.swift in Sources */,
