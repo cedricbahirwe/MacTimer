@@ -45,13 +45,16 @@ struct ContentView: View {
             
             VStack(alignment: .leading) {
                 if timerManager.timerMode != .initial {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 12) {
                         let (_, min, sec) = timerManager.secondsToMinutesAndSeconds(seconds: timerManager.secondsLeft)
                        
                         HStack(spacing: 0) {
                             LargeText(String(min.first!))
                             LargeText(String(min.last!))
                         }
+                        .frame(width: 90, height: 90)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(15)
                         VStack(spacing: 8) {
                             Circle()
                                 .frame(width: 12, height: 12)
@@ -63,12 +66,14 @@ struct ContentView: View {
                             LargeText(String(sec.first!))
                             LargeText(String(sec.last!))
                         }
+                        .frame(width: 90, height: 90)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(15)
                         
                     }
                     .foregroundColor(.white)
-
-                    .padding()
                     .matchedGeometryEffect(id: "Counter", in: animation)
+
                     Spacer()
                     let progress = CGFloat(timerManager.secondsLeft)/60 / CGFloat(timerManager.selectedPickedTime)
                     ProgressBar(initialProgress: progress, color: .pureBlue)

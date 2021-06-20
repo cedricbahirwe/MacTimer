@@ -16,7 +16,7 @@ struct LargeText: View {
     }
     var body: some View {
         Text(text)
-            .font(.system(size: 60, weight: .bold))
+            .font(.system(size: 55, weight: .bold))
     }
 }
 
