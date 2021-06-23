@@ -128,6 +128,7 @@ struct ContentView: View {
             maxWidth: (NSScreen.main?.frame.size.width ?? 1000) * 0.8,
             maxHeight: (NSScreen.main?.frame.size.height ?? 800) * 0.8)
         .background(mainBackground())
+        
     }
     
     private func mainBackground() -> Color {
